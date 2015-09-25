@@ -32,7 +32,12 @@ Setting up the project:
 		ing the project. I've included an uninstall option in the env-
 		ironment setup script, but that's crude. After running it, the
 		PATH modifications need to be manually removed from the 
-		/root/.bashrc file and it probably needs to be sources again.
+		/root/.bashrc file and restart your terminal to see those 
+		changes. There is also -d or --download option that allows
+		you to simply download the related programs and install them
+		manually. If this is done, the uninstall function won't be 
+		applicable because your directory structure will probably
+		be different. ASSUME IT WILL NOT UNINSTALL CORRECTLY.
 
 	2. Compiling, Building and Running the Project:
 		When building a maven project, you need to make sure you're
