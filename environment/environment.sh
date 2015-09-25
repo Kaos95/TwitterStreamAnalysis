@@ -93,4 +93,4 @@ printf '\n !!IMPORTANT!! Check '"${COMPLETE_UNINSTALL_FILE}" ' for paths to remo
 
 fi 
 
-echo "Operation successful!"
+printf "\nOperation successful!\n"
