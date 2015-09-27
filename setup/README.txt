@@ -72,13 +72,14 @@ Setting up the project:
 		project won't be detected and you'll get an error message. 
 		After running this command, the */phase1/target directory will
 		be created if it wasn't already and will be populated with 
-		a couple of dirs and the project jar file. At this point, the
-		project can be run by using the following command:
+		a couple of dirs and the project jar file. At this point, 
+		navigate into the */phase1/target directory. The project can be
+		run by using the following command:
 
 			spark-submit 
 				--class cs5540.bigdata.project.SparkStreamConsumer
 				--master local[2]
-				<jar file name in */phase1/target dir>
+				<path to jar file in */phase1/target dir>
 
 		NOTE: The command above needs to be written on one line and is
 		one command.
