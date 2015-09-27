@@ -11,8 +11,8 @@ USR_BIN_BASE_DIR=/usr/bin
 INSTALL='INSTALL'
 UNINSTALL='UNINSTALL'
 DOWNLOAD_TARS='DOWNLOAD'
-COMPLETE_UNINSTALL_FILENAME=COMPLETE_UNINSTALL.txt
-PATH_MOD_FILE=${HOME}/.bashrc
+COMPLETE_UNINSTALL_FILE='COMPLETE_UNINSTALL.txt'
+PATH_MOD_FILE=/etc/profile
 LOG_FILE=log4j.properties
 CWD=$(pwd)
 
@@ -41,23 +41,30 @@ case $key in
 	;;
 esac
 
+# Get name of user that executed script
+CURRENT_USER=`who am i | awk '{print $1}'`
+CURRENT_USER_HOME_DIR=/home/${CURRENT_USER}
+CURRENT_USER_BASHRC=${CURRENT_USER_HOME_DIR}/.bashrc
+
 SPARK_CONFIG_FILE=log4j.properties
 SPARK_BASE_FILE_NAME=spark-1.5.0-bin-hadoop2.6
 SPARK_TGZ=${SPARK_BASE_FILE_NAME}.tgz
-SPARK_SYM_LINK=${USR_BIN_BASE_DIR}/spark-apache
+SPARK_SYM_LINK=${USR_BIN_BASE_DIR}/spark
 SPARK_PATH=${SPARK_SYM_LINK}/bin
 SPARK_MIRROR=http://www.us.apache.org/dist/spark/spark-1.5.0/spark-1.5.0-bin-hadoop2.6.tgz
 SPARK_CONFIG_DIR=${SPARK_SYM_LINK}/conf
 
 MAVEN_BASE_FILE_NAME=apache-maven-3.3.3-bin
 MAVEN_TGZ=${MAVEN_BASE_FILE_NAME}.tar.gz
-MAVEN_SYM_LINK=${USR_BIN_BASE_DIR}/maven-apache
+MAVEN_SYM_LINK=${USR_BIN_BASE_DIR}/maven
 MAVEN_PATH=${MAVEN_SYM_LINK}/bin
 MAVEN_MIRROR=http://www.eu.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
 
 if [ ${MODE} = "${INSTALL}" ] 
 then
 echo "Running install..."
+
+printf '\n\n# ----- CS5540 PROJECT AUTO-INSTALL PATHS BEGIN -----\n' >> ${PATH_MOD_FILE}
 
 # Spark Install
 wget ${SPARK_MIRROR}
@@ -80,30 +87,34 @@ ln -s ${USR_LIB_BASE_DIR}/${MAVEN_BASE_FILE_NAME} ${MAVEN_SYM_LINK}
 echo 'export PATH=$PATH:'"${MAVEN_PATH}" >> ${PATH_MOD_FILE}
 rm ${MAVEN_TGZ}
 
+printf '# ----- CS5540 PROJECT AUTO-INSTALL PATHS END -----\n\n' >> ${PATH_MOD_FILE}
+
 printf '\n!!! Make sure to run: source '"${PATH_MOD_FILE}"' !!!\n'
 fi
 
 if [ ${MODE} = "${UNINSTALL}" ] 
 then
-echo "Running uninstall..."
-echo "Directory of file with PATH modifications: ${PATH_MOD_FILE}" > ${COMPLETE_UNINSTALL_FILE}
+printf "\nRunning uninstall...\n"
+printf 'Directory of file with PATH modifications: '"${PATH_MOD_FILE}"' \n\n' > ${CWD}/${COMPLETE_UNINSTALL_FILE}
 
+printf 'PATH entries to remove: \n' >> ${CWD}/${COMPLETE_UNINSTALL_FILE}
 # Spark Uninstall
 sudo rm -r ${USR_LIB_BASE_DIR}/${SPARK_BASE_FILE_NAME}
 sudo rm -r ${SPARK_SYM_LINK}
-echo "\+ ${SPARK_PATH}" >> ${COMPLETE_UNINSTALL_FILE}
+printf "+ ${SPARK_PATH}\n" >> ${CWD}/${COMPLETE_UNINSTALL_FILE}
 
 # Maven Uninstall
 sudo rm -r ${USR_LIB_BASE_DIR}/${MAVEN_BASE_FILE_NAME}
 sudo rm -r ${MAVEN_SYM_LINK}
-echo "\+ ${MAVEN_PATH}" >> ${COMPLETE_UNINSTALL_FILE}
+printf "+ ${MAVEN_PATH}\n" >> ${CWD}/${COMPLETE_UNINSTALL_FILE}
 
-`printf '\n !!IMPORTANT!! Check '${COMPLETE_UNINSTALL_FILE}' for paths to remove from PATH environment variable.\n'`
+printf '\n !!IMPORTANT!! Check '"${COMPLETE_UNINSTALL_FILE}"' for paths to remove from PATH the '"${PATH_MOD_FILE}"' config file.\n'
 
 fi
 
 if [ ${MODE} = "${DOWNLOAD_TARS}" ]
 then
+	printf '\nDownloading packages...\n'
 	# Download all components
 	wget ${SPARK_MIRROR} 
 	wget ${MAVEN_MIRROR}

@@ -5,24 +5,27 @@ Setting up the project:
 		install the version of Apache Maven and Apache Spark that were
 		used to successfully run the program. To install both Spark
 		and Maven, run these commands in the /environment directory:
-		(NOTE: Look for the username displayed at the conclusion of
-		the install command to find out which user directory should
-		be sourced -- it's dynamically generated and displays the 
-		path where the .bashrc file was modified. Most likely it'll
-		be the root home, /root/.bashrc)
 			
 			sudo ./environment.sh --install 
-			source <path specified at end of install script output>
+			source /etc/profile
 
 			or
 
 			sudo ./environment.sh -i
-			source <path specified at end of install script output>
+			source /etc/profile
 		
 		These commands will install BOTH Spark and Maven. If you already
 		have either one in your PATH variable issues may arise due to 
-		duplication binaries with the same name. After running those 
-		commands, use the following to verify the installation: 
+		duplication binaries with the same name. I'd recommend removing
+		the version you currently have from the PATH and running the 
+		environment.sh --install or running environment.sh --download
+		to download the tar files and manually install the software.
+		IMPORTANT: If you use the --download option, make sure you don't
+		commit the project to your git branch without removing the tar
+		files. Git has a 100 MB push limit and it can be difficult to 
+		get it to forget that commit leading to issues pushing your
+		changes. After installation, use the following to verify the 
+		installation: 
 
 			spark-submit
 
@@ -37,12 +40,15 @@ Setting up the project:
 		ing the project. I've included an uninstall option in the env-
 		ironment setup script, but that's crude. After running it, the
 		PATH modifications need to be manually removed from the 
-		/root/.bashrc file and restart your terminal to see those 
-		changes. There is also -d or --download option that allows
-		you to simply download the related programs and install them
-		manually. If this is done, the uninstall function won't be 
-		applicable because your directory structure will probably
-		be different. ASSUME IT WILL NOT UNINSTALL CORRECTLY.
+		/etc/profile file and your terminal restarted to see those 
+		changes. The necessary modifications are printed in a text file
+		created by the uninstall process in the directory in which
+		the environment.sh script resides. There is also -d or 
+		--download option that allows you to simply download the 
+		related programs and install them manually. If this is done, 
+		the uninstall function won't be applicable because your 
+		directory structure will probably be different. ASSUME IT WILL 
+		NOT UNINSTALL CORRECTLY.
 
 	2. Compiling, Building and Running the Project:
 		When building a maven project, you need to make sure you're
