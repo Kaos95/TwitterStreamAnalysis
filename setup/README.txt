@@ -14,6 +14,10 @@ Setting up the project:
 			sudo ./environment.sh -i
 			source /etc/profile
 		
+		NOTE: You need to restart the computer for new terminals to auto-
+		load the PATH changes. Until then, each new terminal will require
+		manually running the source /etc/profile command.
+
 		These commands will install BOTH Spark and Maven. If you already
 		have either one in your PATH variable issues may arise due to 
 		duplication binaries with the same name. I'd recommend removing
