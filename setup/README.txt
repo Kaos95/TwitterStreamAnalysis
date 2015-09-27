@@ -5,14 +5,19 @@ Setting up the project:
 		install the version of Apache Maven and Apache Spark that were
 		used to successfully run the program. To install both Spark
 		and Maven, run these commands in the /environment directory:
+		(NOTE: Look for the username displayed at the conclusion of
+		the install command to find out which user directory should
+		be sourced -- it's dynamically generated and displays the 
+		path where the .bashrc file was modified. Most likely it'll
+		be the root home, /root/.bashrc)
 			
 			sudo ./environment.sh --install 
-			source /root/.bashrc
+			source <path specified at end of install script output>
 
 			or
 
 			sudo ./environment.sh -i
-			source /root/.bashrc
+			source <path specified at end of install script output>
 		
 		These commands will install BOTH Spark and Maven. If you already
 		have either one in your PATH variable issues may arise due to 
