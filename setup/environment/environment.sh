@@ -1,12 +1,11 @@
 #!/bin/bash 
-#                             !!! RUN AS ROOT !!! 
 #
 # Run this bash script to automatically configure your environment to
 # be compatible with this project. This script auto-installs:
 # 	1. Apache Spark v 1.5.0 w/ Hadoop v.2.6 components. 
 #
 
-USR_LIB_BASE_DIR=/usr/lib
+USR_LIB_BASE_DIR=/usr/local/bin
 USR_BIN_BASE_DIR=/usr/bin
 INSTALL='INSTALL'
 UNINSTALL='UNINSTALL'
