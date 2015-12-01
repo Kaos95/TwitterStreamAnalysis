@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.HashMap;
 
 import org.apache.spark.*;
 import org.apache.spark.api.java.function.*;
@@ -26,6 +27,9 @@ public class SparkStreamConsumer {
 
 	public static void run(){
 
+		//Filtration values
+		
+
 		//Tokens
 		String CONSUMER_KEY = "DsrKVsGSct5khALPJJh3VM7aZ";
 		String CONSUMER_SECRET = "SCrcpDiw5Pw7mKqBBn6f4cLw2I4Fhxss1mI8eWLp5kRJy9LWcP";
@@ -42,11 +46,51 @@ public class SparkStreamConsumer {
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("Twitter Sentiment Analysis");
 		JavaStreamingContext jsc = new JavaStreamingContext(conf, new Duration(1000));
 		
+		//Hashtags
+		String[] hashtags = { "hillary2016", "hillaryclinton", "hillary",
+				"berniesanders", "bernie2016", "feelthebern", 
+				"trump", "trump2016", "bencarson", "bencarsonfacts",
+				"bencarsonwikipedia", "freehillary", "hillaryforprison2016",
+				"trumpisright", "trumpisdangerous", "GOP", "republican",
+				"democrat", "thankful", "thanksgiving", "blackfriday",
+				"cyberweekend", "cybermonday" }
+
+		String[] filters = new String[hashtags.length];
+
+		HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
+
+		for(int idx = 0; idx < hashtags.length; idx++){
+			filters[idx] = "\"hashtags\" " + hashtags[idx]
+		}
+
 		//Create DStream (Discretized Stream) of twitter user statuses
-		JavaReceiverInputDStream<Status> statuses = TwitterUtils.createStream(jsc);
-		
+		JavaReceiverInputDStream<Status> rawStatuses = TwitterUtils.createStream(jsc, filters);
+
+		//Create hashmap for optimized processing of statuses
+		for( String tag : hashtags ){
+			tagMap.put(tag, true);
+		}
+
+		//Filter results
+		JavaDStream<Status> filteredStatuses = rawStatuses.filter(
+			new Function<Status, Boolean>(){
+				public Boolean call(Status x){
+					HashtagEntity[] hashtags = x.getHashtagEntities();
+					Boolean containsHash = false;
+					
+					//Check if status hashtags are those
+					//being analyzed 
+					for(HashtagEntity hashtag : hashtags){
+						if( tagMap.get(hashtag.getText()) )
+							return true
+					}
+					return false
+				}
+			}
+		);
+
 		//Split each line into words
-		JavaDStream<String> words = statuses.flatMap(
+		JavaDStream<String> words = filteredStatuses.flatMap(
 			new FlatMapFunction<Status, String>(){
 				@Override
 				public Iterable<String> call(Status x){
@@ -55,27 +99,32 @@ public class SparkStreamConsumer {
 			}
 		);
 		
-		//Count each word in each batch
-		JavaPairDStream<String, Integer> pairs = words.mapToPair(
-			new PairFunction<String, String, Integer>(){
-				@Override
-				public Tuple2<String, Integer> call(String s) throws Exception {
-					return new Tuple2<String, Integer>(s, 1);
-				}
-			}
-		);
+		
 
-		JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey(
-			new Function2<Integer, Integer, Integer>(){
-				@Override
-				public Integer call(Integer i1, Integer i2) throws Exception {
-					return i1 + i2;
-				}
-			}
-		);
+//		//Count each word in each batch
+//		JavaPairDStream<String, Integer> pairs = words.mapToPair(
+//			new PairFunction<String, String, Integer>(){
+//				@Override
+//				public Tuple2<String, Integer> call(String s) throws Exception {
+//					return new Tuple2<String, Integer>(s, 1);
+//				}
+//			}
+//		);
+//
+//		JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey(
+///			new Function2<Integer, Integer, Integer>(){
+///				@Override
+//				public Integer call(Integer i1, Integer i2) throws Exception {
+//					return i1 + i2;
+//				}
+//			}
+//		);
 
 		//Print the results
 		wordCounts.print();
+
+		//Save results to distributed file system
+		wordCounts.saveAsHadoopFiles("sentiment", "out");
 
 		//Now that computation is set up, invoke
 		jsc.start();
