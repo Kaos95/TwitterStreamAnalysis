@@ -57,14 +57,14 @@ public class SparkStreamConsumer {
 
 		String[] filters = new String[hashtags.length];
 
-		HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
-
 		for(int idx = 0; idx < hashtags.length; idx++){
-			filters[idx] = "\"hashtags\" " + hashtags[idx]
+			filters[idx] = "hashtags " + hashtags[idx]
 		}
 
 		//Create DStream (Discretized Stream) of twitter user statuses
 		JavaReceiverInputDStream<Status> rawStatuses = TwitterUtils.createStream(jsc, filters);
+
+		HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
 
 		//Create hashmap for optimized processing of statuses
 		for( String tag : hashtags ){
@@ -81,25 +81,25 @@ public class SparkStreamConsumer {
 					//Check if status hashtags are those
 					//being analyzed 
 					for(HashtagEntity hashtag : hashtags){
-						if( tagMap.get(hashtag.getText()) )
-							return true
+						Boolean foundTag = tagMap.get(hashtag.getText());
+						if(foundTag == true)
+							containsHash = true;
+							break;
 					}
-					return false
+					return containsHash;
 				}
 			}
 		);
 
-		//Split each line into words
-		JavaDStream<String> words = filteredStatuses.flatMap(
-			new FlatMapFunction<Status, String>(){
-				@Override
-				public Iterable<String> call(Status x){
-					return Arrays.asList(x.getText().split(" "));
-				}
-			}
-		);
-		
-		
+//		//Split each line into words
+//		JavaDStream<String> words = filteredStatuses.flatMap(
+//			new FlatMapFunction<Status, String>(){
+///				@Override
+//				public Iterable<String> call(Status x){
+//					return Arrays.asList(x.getText().split(" "));
+//				}
+//			}
+//		);
 
 //		//Count each word in each batch
 //		JavaPairDStream<String, Integer> pairs = words.mapToPair(
@@ -121,10 +121,10 @@ public class SparkStreamConsumer {
 //		);
 
 		//Print the results
-		wordCounts.print();
+		filteredStatuses.print();
 
 		//Save results to distributed file system
-		wordCounts.saveAsHadoopFiles("sentiment", "out");
+		filteredStatuses.saveAsHadoopFiles("sentiment", "out");
 
 		//Now that computation is set up, invoke
 		jsc.start();
