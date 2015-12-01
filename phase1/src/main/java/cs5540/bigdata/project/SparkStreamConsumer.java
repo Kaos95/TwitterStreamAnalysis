@@ -14,8 +14,6 @@ import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.twitter.*;
 import scala.Tuple2;
 
-import org.apache.spark.streaming.twitter.twitter4j;
-
 //This code was developed with the help of the Spark Streaming documentation
 //introduction found at:
 //https://spark.apache.org/docs/1.1.0/streaming-programming-guide.html
@@ -26,9 +24,6 @@ public class SparkStreamConsumer {
 	}
 
 	public static void run(){
-
-		//Filtration values
-		
 
 		//Tokens
 		String CONSUMER_KEY = "DsrKVsGSct5khALPJJh3VM7aZ";
@@ -53,16 +48,16 @@ public class SparkStreamConsumer {
 				"bencarsonwikipedia", "freehillary", "hillaryforprison2016",
 				"trumpisright", "trumpisdangerous", "GOP", "republican",
 				"democrat", "thankful", "thanksgiving", "blackfriday",
-				"cyberweekend", "cybermonday" }
+				"cyberweekend", "cybermonday" };
 
 		String[] filters = new String[hashtags.length];
 
 		for(int idx = 0; idx < hashtags.length; idx++){
-			filters[idx] = "hashtags " + hashtags[idx]
+			filters[idx] = "hashtags " + hashtags[idx];
 		}
 
 		//Create DStream (Discretized Stream) of twitter user statuses
-		JavaReceiverInputDStream<Status> rawStatuses = TwitterUtils.createStream(jsc, filters);
+		JavaReceiverInputDStream<twitter4j.Status> rawStatuses = TwitterUtils.createStream(jsc, filters);
 
 		HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
 
@@ -72,9 +67,9 @@ public class SparkStreamConsumer {
 		}
 
 		//Filter results
-		JavaDStream<Status> filteredStatuses = rawStatuses.filter(
-			new Function<Status, Boolean>(){
-				public Boolean call(Status x){
+		JavaDStream<twitter4j.Status> filteredStatuses = rawStatuses.filter(
+			new Function<twitter4j.Status, Boolean>(){
+				public Boolean call(twitter4j.Status x){
 					HashtagEntity[] hashtags = x.getHashtagEntities();
 					Boolean containsHash = false;
 					
@@ -93,9 +88,9 @@ public class SparkStreamConsumer {
 
 //		//Split each line into words
 //		JavaDStream<String> words = filteredStatuses.flatMap(
-//			new FlatMapFunction<Status, String>(){
+//			new FlatMapFunction<twitter4j.Status, String>(){
 ///				@Override
-//				public Iterable<String> call(Status x){
+//				public Iterable<String> call(twitter4j.Status x){
 //					return Arrays.asList(x.getText().split(" "));
 //				}
 //			}
