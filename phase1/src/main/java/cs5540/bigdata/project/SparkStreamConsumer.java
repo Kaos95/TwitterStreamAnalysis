@@ -70,12 +70,12 @@ public class SparkStreamConsumer {
 		JavaDStream<twitter4j.Status> filteredStatuses = rawStatuses.filter(
 			new Function<twitter4j.Status, Boolean>(){
 				public Boolean call(twitter4j.Status x){
-					HashtagEntity[] hashtags = x.getHashtagEntities();
+					twitter4j.HashtagEntity[] hashtags = x.getHashtagEntities();
 					Boolean containsHash = false;
 					
 					//Check if status hashtags are those
 					//being analyzed 
-					for(HashtagEntity hashtag : hashtags){
+					for(twitter4j.HashtagEntity hashtag : hashtags){
 						Boolean foundTag = tagMap.get(hashtag.getText());
 						if(foundTag == true)
 							containsHash = true;
