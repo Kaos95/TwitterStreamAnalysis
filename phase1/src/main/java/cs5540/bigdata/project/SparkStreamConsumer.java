@@ -26,10 +26,10 @@ public class SparkStreamConsumer {
 	public static void run(){
 
 		//Tokens
-		String CONSUMER_KEY = "DsrKVsGSct5khALPJJh3VM7aZ";
-		String CONSUMER_SECRET = "SCrcpDiw5Pw7mKqBBn6f4cLw2I4Fhxss1mI8eWLp5kRJy9LWcP";
-		String ACCESS_TOKEN = "3633627554-rFls2gI4qbrqJTbR0BZKoCADouY2TkjLFEa8FQe";
-		String ACCESS_TOKEN_SECRET = "GBgogkDScpUknkuXrl4nNrQhEPIW65TJlkRkX3rkBHqO2";
+		String CONSUMER_KEY = "goiaVjc84eaL50XTT5VPHx03H";
+		String CONSUMER_SECRET = "zwKNRZaEXIFhClmGapw7DawbaWnT9XXEHFSsmuhn5PhXFw8B3B";
+		String ACCESS_TOKEN = "3622126518-n42YOv8uiLzWVVwJMouMRSdD206FHyg2YD1OBYE";
+		String ACCESS_TOKEN_SECRET = "ENQ4hgzLMPNxO07biRvtlaGmgkyGC7yijqv7Cx9Ks6KqY";
 
 		//Set twitter4j oauth properties
 		System.setProperty("twitter4j.oauth.consumerKey", CONSUMER_KEY);
