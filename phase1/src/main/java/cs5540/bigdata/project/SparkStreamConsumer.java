@@ -59,7 +59,7 @@ public class SparkStreamConsumer {
 		//Create DStream (Discretized Stream) of twitter user statuses
 		JavaReceiverInputDStream<twitter4j.Status> rawStatuses = TwitterUtils.createStream(jsc, filters);
 
-		HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
+		final HashMap<String, Boolean> tagMap = new HashMap<String, Boolean>();
 
 		//Create hashmap for optimized processing of statuses
 		for( String tag : hashtags ){
