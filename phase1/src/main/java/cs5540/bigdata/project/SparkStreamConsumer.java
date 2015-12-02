@@ -71,17 +71,27 @@ public class SparkStreamConsumer {
 			new Function<twitter4j.Status, Boolean>(){
 				public Boolean call(twitter4j.Status x){
 					twitter4j.HashtagEntity[] hashtags = x.getHashtagEntities();
-					Boolean containsHash = false;
+					Boolean containsHashtag = false;
 					
 					//Check if status hashtags are those
 					//being analyzed 
 					for(twitter4j.HashtagEntity hashtag : hashtags){
 						Boolean foundTag = tagMap.get(hashtag.getText());
 						if(foundTag == true)
-							containsHash = true;
+							containsHashtag = true;
 							break;
 					}
-					return containsHash;
+					return containsHashtag;
+				}
+			}
+		);
+
+		//Map to PairRDD because needed for saveHadoopFiles() fcn
+		JavaPairDStream<String, twitter4j.Status> pairedStatuses = mapToPair(
+			new PairFunction<String, twitter4j.Status>(){
+				@Override
+				public Tuple2<String, twitter4j.Status> call(twitter4j.Status x){
+					return new Tuple2<String, twitter4j.Status>(Object.toString(x.getId()), x); 
 				}
 			}
 		);
@@ -116,10 +126,10 @@ public class SparkStreamConsumer {
 //		);
 
 		//Print the results
-		filteredStatuses.print();
+		pairedStatuses.print();
 
 		//Save results to distributed file system
-		filteredStatuses.saveAsHadoopFiles("sentiment", "out");
+		pairedStatuses.saveAsHadoopFiles("sentiment", "out");
 
 		//Now that computation is set up, invoke
 		jsc.start();
