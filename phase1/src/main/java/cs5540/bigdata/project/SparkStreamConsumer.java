@@ -87,7 +87,7 @@ public class SparkStreamConsumer {
 		);
 
 		//Map to PairRDD because needed for saveHadoopFiles() fcn
-		JavaPairDStream<String, twitter4j.Status> pairedStatuses = mapToPair(
+		JavaPairDStream<String, twitter4j.Status> pairedStatuses = filteredStatuses.mapToPair(
 			new PairFunction<twitter4j.Status, String, twitter4j.Status>(){
 				@Override
 				public Tuple2<String, twitter4j.Status> call(twitter4j.Status x){
