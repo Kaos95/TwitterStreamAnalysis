@@ -91,7 +91,7 @@ public class SparkStreamConsumer {
 			new PairFunction<twitter4j.Status, String, twitter4j.Status>(){
 				@Override
 				public Tuple2<String, twitter4j.Status> call(twitter4j.Status x){
-					return new Tuple2<String, twitter4j.Status>(Object.toString(x.getId()), x); 
+					return new Tuple2<String, twitter4j.Status>(Long.toString(x.getId()), x); 
 				}
 			}
 		);
