@@ -140,7 +140,7 @@ public class SparkStreamConsumer {
 		pairedStatuses.print();
 
 		//Save results to distributed file system
-		pairedStatuses.saveAsTextFiles("sentiment", "out");
+		//pairedStatuses.saveAsTextFiles("sentiment", "out");
 
 		//Now that computation is set up, invoke
 		jsc.start();

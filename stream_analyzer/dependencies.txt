@@ -1,0 +1,11 @@
+#
+# The dependencies required to make this software work
+#
+
+ - flask (pip)
+ - pymongo (pip, MongoDB must also be installed)
+ - npm (apt-get, for web ui)
+ - bower (npm, for web ui)
+ - requests (support for streaming)
+ - Scala (data collector)
+ - 
