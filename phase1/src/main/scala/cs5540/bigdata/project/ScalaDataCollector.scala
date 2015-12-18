@@ -3,10 +3,12 @@ import org.apache.spark.streaming
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.streaming
+import org.apache.spark.streaming._
 import org.apache.spark.streaming.twitter._
 import org.apache.spark.streaming.StreamingContext
+import org.apache.spark.streaming.StreamingContext._
 import org.apache.spark.streaming.Seconds
+import org.apache.hadoop.mapred._
 
 package cs5540.bigdata.project
 {
@@ -31,10 +33,12 @@ package cs5540.bigdata.project
 			System.setProperty("twitter4j.oauth.consumerSecret", CONSUMER_SECRET)
 			System.setProperty("twitter4j.oauth.accessToken", ACCESS_TOKEN)
 			System.setProperty("twitter4j.oauth.accessTokenSecret", ACCESS_TOKEN_SECRET)
+
+			ssc.checkpoint("test/checkpoint")
 			val tweets = TwitterUtils.createStream(ssc, None)
-			val statuses = tweets.map(status => status.getText())
-				statuses.print()
-				statuses.saveAsTextFiles()
+			val paired_tweets = tweets.map(status => (status.getId().toString, status.getText()))
+				paired_tweets.print()
+				paired_tweets.saveAsHadoopFiles("test/tweets", "raw", classOf[String], classOf[String], classOf[TextOutputFormat[String, String]])
 			ssc.start()
 				ssc.awaitTermination()
 		}
