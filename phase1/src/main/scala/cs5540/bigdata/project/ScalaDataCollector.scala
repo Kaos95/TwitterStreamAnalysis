@@ -18,10 +18,10 @@ package cs5540.bigdata.project
 {
 	object ScalaDataCollector
 	{
-                val CONSUMER_KEY = "goiaVjc84eaL50XTT5VPHx03H"
-                val CONSUMER_SECRET = "zwKNRZaEXIFhClmGapw7DawbaWnT9XXEHHFSsmuhn5PhXFw8B3B"
-                val ACCESS_TOKEN = "3622126518-n42YOv8uiLzWVVwJMouMRSdD2206FHyg2YD1OBYE"
-                val ACCESS_TOKEN_SECRET = "ENQ4hgzLMPNxO07biRvtlaGmgkyGCC7yijqv7Cx9Ks6KqY"
+                val CONSUMER_KEY = "muOazLwgQMTbVisdWYgwK9kPF"
+                val CONSUMER_SECRET = "T1PwAphGXD7dyXiAsrEIijtt6BYHImo1TxYkLCS3W1P0tdK13k"
+                val ACCESS_TOKEN = "4593366852-UxI5yCJad1D0RLQt8oTZc6a46CkbWvqAPqci5m2"
+                val ACCESS_TOKEN_SECRET = "KjFYAYMj5ksTTGKHbZt6dQC7zZrvc1DqR9yH6PafGZOwy"
                 System.setProperty("twitter4j.oauth.consumerKey", CONSUMER_KEY)
                 System.setProperty("twitter4j.oauth.consumerSecret", CONSUMER_SECRET)
                 System.setProperty("twitter4j.oauth.accessToken", ACCESS_TOKEN)
@@ -30,7 +30,9 @@ package cs5540.bigdata.project
 		val HASHTAG_LIST = List(
 				"taylorswift", "geek", "mcdonalds",
 				"donaldtrump", "hilaryclinton", "cake",
-				"yolo", "merrychristmas", "happyholidays"
+				"yolo", "merrychristmas", "happyholidays",
+				"MTVStars", "VideoMTV2015", "gameinsight",
+				"AMAs", "android", "androidgames", "RT" 
 					  )
 		val FILTER_HASHTAGS = new HashMap[String, Boolean]()
 
@@ -46,11 +48,12 @@ package cs5540.bigdata.project
 			// Open input stream
 			val in = TwitterUtils.createStream(SSC, None)
 
+			var filteredTweets = in.filter(status => status.getText.length != 0)
+
 			// Filter tweets
-			val keywordFilteredTweets = in.filter(tweet => hasKeywordInMessageBody(tweet))
-			val hashFilteredTweets = in.filter(tweet => containsFilterHashtag(tweet))
-			var filteredTweets = keywordFilteredTweets.union(hashFilteredTweets)			
-			filteredTweets = filteredTweets.filter(status => status.getText.length != 0)
+			val keywordFilteredTweets = filteredTweets.filter(tweet => hasKeywordInMessageBody(tweet))
+			val hashFilteredTweets = filteredTweets.filter(tweet => containsFilterHashtag(tweet))
+			filteredTweets = keywordFilteredTweets.union(hashFilteredTweets)			
 
 			// Pair tweets (key=value. This is required to use the saveAsHadoopFiles function for some reason)
 			val tweets = filteredTweets.map(status => (status.getId(), status.getText))
